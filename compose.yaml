@@ -1,0 +1,7 @@
+services:
+  demo:
+    build: .
+    volumes:
+      - ./artifacts:/app/artifacts
+    environment:
+      APP_ENV: local

@@ -1,0 +1,16 @@
+flowchart LR
+    N0["Clips"]
+    N1["Blob Storage"]
+    N2["Azure ML / Container Apps"]
+    N3["Tracking anónimo"]
+    N4["Data Explorer"]
+    N5["Azure Monitor"]
+    N6["Alertas"]
+    N0 --> N1
+    N1 --> N2
+    N2 --> N3
+    N3 --> N4
+    N4 --> N5
+    N5 --> N6
+    classDef title fill:#0f172a,color:#f8fafc,stroke:#38bdf8
+    class N0 title

@@ -1,0 +1,47 @@
+{
+  "title": "VisionOps",
+  "flows": {
+    "portable": [
+      "Detecciones anónimas",
+      "Validar privacidad",
+      "Rastrear",
+      "Contar zonas",
+      "Detectar aforo",
+      "Exportar",
+      "Ocupación y alertas"
+    ],
+    "local": [
+      "Synthetic fixtures",
+      "Python · VisionOps",
+      "Contract tests",
+      "Local artifacts"
+    ],
+    "aws": [
+      "Clips",
+      "S3 / Kinesis Video",
+      "ECS o SageMaker",
+      "Tracking anónimo",
+      "Timestream",
+      "CloudWatch",
+      "Alertas"
+    ],
+    "gcp": [
+      "Clips",
+      "Cloud Storage",
+      "Vertex AI / Cloud Run",
+      "Tracking anónimo",
+      "BigQuery",
+      "Cloud Monitoring",
+      "Alertas"
+    ],
+    "azure": [
+      "Clips",
+      "Blob Storage",
+      "Azure ML / Container Apps",
+      "Tracking anónimo",
+      "Data Explorer",
+      "Azure Monitor",
+      "Alertas"
+    ]
+  }
+}

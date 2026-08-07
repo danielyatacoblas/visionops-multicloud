@@ -1,0 +1,12 @@
+name: cloud-deploy-disabled
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "Cloud deployment is intentionally disabled during local development."
+          echo "Configure OIDC, environments, approvals and budgets before replacing this guard."

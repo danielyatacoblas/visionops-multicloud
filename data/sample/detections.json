@@ -1,0 +1,26 @@
+{
+  "zone_capacity": {"entry": 3, "checkout": 2},
+  "frames": [
+    {
+      "timestamp": "2026-08-06T14:00:00Z",
+      "objects": [
+        {"track_id": "anon-001", "zone": "entry", "confidence": 0.96},
+        {"track_id": "anon-002", "zone": "entry", "confidence": 0.91}
+      ]
+    },
+    {
+      "timestamp": "2026-08-06T14:00:10Z",
+      "objects": [
+        {"track_id": "anon-001", "zone": "checkout", "confidence": 0.95},
+        {"track_id": "anon-002", "zone": "checkout", "confidence": 0.93},
+        {"track_id": "anon-003", "zone": "checkout", "confidence": 0.90}
+      ]
+    },
+    {
+      "timestamp": "2026-08-06T14:00:20Z",
+      "objects": [
+        {"track_id": "anon-002", "zone": "checkout", "confidence": 0.94}
+      ]
+    }
+  ]
+}

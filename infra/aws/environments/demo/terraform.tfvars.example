@@ -1,0 +1,5 @@
+region                 = "us-east-1"
+environment            = "demo"
+owner                  = "portfolio"
+enable_cloud_resources = false
+# Account/project/subscription identifiers remain PENDING_CLOUD_VALIDATION.
