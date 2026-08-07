@@ -19,6 +19,9 @@ jobs:
       - run: pip install -e ".[dev]"
       - run: pytest -q
       - run: python scripts/render_diagrams.py --check
+      - run: python scripts/generate_load.py --profile smoke --output artifacts/scale-input
+      - run: python scripts/run_scale.py --input artifacts/scale-input --output artifacts/scale-report
+      - run: python scripts/benchmark_api.py --rows 1000 --partition-rows 500 --output artifacts/api-smoke
 
   terraform-format:
     runs-on: ubuntu-latest
