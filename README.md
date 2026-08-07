@@ -108,10 +108,107 @@ Cada carpeta contiene proveedores fijados, variables, etiquetas, guardas de segu
 - `diagrams/rendered/`: SVG exportado y visible en GitHub.
 - `.github/workflows/ci.yml`: tests y `terraform fmt -check`, sin despliegue.
 
+## Estructura del proyecto
+
+El repositorio separa dominio, datos, automatización, evidencia e infraestructura.
+La misma lógica local se conserva al sustituir los adaptadores por servicios de
+AWS, Azure o Google Cloud.
+
+```text
+visionops-multicloud/
+├── .github/
+│   └── workflows/ci.yml         # Pruebas, diagramas y Terraform por cada push o PR
+├── data/
+│   └── sample/                  # Dataset mínimo versionado para la demostración
+├── diagrams/
+│   ├── architecture.json        # Inventario verificable de nodos, flujos y estados
+│   ├── src/                     # Mermaid: local, portable, AWS, Azure y GCP
+│   ├── rendered/                # Diagramas exportados en PNG y SVG
+│   └── icons/                   # Iconos oficiales de los tres proveedores
+├── docs/
+│   ├── demo/                    # Salidas pequeñas y reproducibles
+│   ├── evidence/local-100k.json # Métricas, hashes, hardware y limitaciones
+│   ├── CV_PROJECT.md            # Explicación para CV y entrevista
+│   ├── SCALE_AND_API.md         # Contrato de escala y API bulk
+│   └── PENDING_CLOUD.md         # Configuraciones que requieren una cuenta cloud
+├── infra/
+│   ├── aws/                     # Terraform, variables, outputs y tests AWS
+│   ├── azure/                   # Terraform, variables, outputs y tests Azure
+│   └── gcp/                     # Terraform, variables, outputs y tests GCP
+├── scripts/
+│   ├── bootstrap.ps1            # Preparación del entorno local
+│   ├── demo.ps1                 # Demostración del flujo de negocio
+│   ├── generate_load.py         # Generador NDJSON determinista y particionado
+│   ├── benchmark_api.py         # Prueba HTTP real con idempotencia
+│   ├── run_scale.py             # Procesamiento streaming y dashboard
+│   └── render_diagrams.py       # Generación y verificación de diagramas
+├── src/
+│   └── visionops/
+│       ├── pipeline.py          # Detecciones anónimas, ocupación y privacidad
+│       ├── api.py               # FastAPI: health, métricas e ingesta bulk
+│       ├── scale_config.py      # Contrato y generador específico del dominio
+│       └── scale_runtime.py     # Particiones, checksums y agregación acotada
+├── tests/                       # Dominio, arquitectura, escala, API y Terraform TDD
+├── compose.yaml                 # Demo y API local mediante contenedores
+├── Dockerfile                   # Imagen de la demostración
+├── Dockerfile.api               # Imagen de la API
+├── CONTRIBUTING.md              # Política GitFlow y controles para pull requests
+├── Makefile                     # Comandos abreviados de desarrollo
+└── README.md                    # Entrada principal para reclutadores
+```
+
 ## GitFlow
 
-`main` representa una versión demostrable; `develop` integra cambios; `feature/*`, `release/*` y `hotfix/*` tienen vida corta. Consulta [CONTRIBUTING.md](CONTRIBUTING.md). El repositorio local se inicializa con `main` y `develop`; el remoto se añadirá cuando se proporcione la URL.
+El historial aplica GitFlow: el desarrollo ocurre fuera de `main`, las ramas de
+funcionalidad regresan a `develop` mediante merge y sólo una versión validada se
+promueve a `main`.
 
+```mermaid
+gitGraph
+   commit id: "bootstrap local"
+   branch develop
+   checkout develop
+   commit id: "base reproducible"
+   branch feature-architecture
+   checkout feature-architecture
+   commit id: "diagramas multicloud"
+   checkout develop
+   merge feature-architecture id: "integrar arquitectura"
+   branch feature-scale-api
+   checkout feature-scale-api
+   commit id: "API y escala local"
+   checkout develop
+   merge feature-scale-api id: "integrar escala"
+   branch feature-readme
+   checkout feature-readme
+   commit id: "árbol y GitFlow"
+   checkout develop
+   merge feature-readme id: "integrar documentación"
+   checkout main
+   merge develop id: "release para portafolio"
+```
+
+| Rama | Responsabilidad | Regla de salida |
+|---|---|---|
+| `main` | Versión estable que ve primero un reclutador | Sólo recibe releases verificadas desde `develop` o correcciones urgentes |
+| `develop` | Integración continua del siguiente incremento | Debe conservar pruebas, diagramas y Terraform en estado válido |
+| `feature/*` | Cambio acotado de aplicación, datos, MLOps, infraestructura o documentación | Pull request hacia `develop`; se elimina al integrarse |
+| `release/*` | Estabilización opcional antes de publicar una versión | Sólo correcciones, documentación y preparación de versión |
+| `hotfix/*` | Corrección urgente creada desde `main` | Se integra tanto en `main` como en `develop` |
+
+Flujo exigido para cada cambio:
+
+1. Crear `feature/<nombre-corto>` desde `develop`.
+2. Implementar el cambio junto con pruebas y documentación.
+3. Abrir un pull request hacia `develop`.
+4. Exigir CI correcto: pruebas locales, consistencia de diagramas y Terraform seguro.
+5. Integrar con merge no fast-forward para conservar la decisión arquitectónica.
+6. Promover `develop` a `main` únicamente cuando la entrega sea demostrable.
+7. Crear un tag semántico cuando exista una versión desplegada o una línea base formal.
+
+El gráfico refleja las ramas reales usadas para la arquitectura detallada y la
+ruta de escala/API. Consulta [CONTRIBUTING.md](CONTRIBUTING.md) para los controles
+de pull request y las reglas sobre evidencia cloud.
 ## Seguridad y costos
 
 No se versionan secretos ni credenciales. Los ejemplos usan nombres no sensibles. Antes de desplegar se debe configurar autenticación federada, alertas de presupuesto, límites de cuota, retención y un comando de destrucción verificado. No se afirma que una integración cloud esté probada hasta guardar evidencia real.
