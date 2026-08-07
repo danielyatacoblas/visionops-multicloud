@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0",
+  "project": "visionops-multicloud",
+  "claim": "100,000 synthetic records verified locally through generation, streaming processing, and real loopback HTTP bulk ingestion",
+  "environment": {
+    "captured_at": "2026-08-06T23:14:27-05:00",
+    "cpu": "12th Gen Intel(R) Core(TM) i7-12700H",
+    "logical_processors": 20,
+    "ram_gb": 15.71,
+    "os": "Microsoft Windows 11 Home",
+    "python": "3.12.2",
+    "timezone": "America/Lima (UTC-05:00)"
+  },
+  "dataset": {
+    "rows": 100000,
+    "partitions": 2,
+    "dataset_sha256": "4488771aa160c83b67006dead8e47ec01ecd192fea16db0330398a0a57a6ef96",
+    "generation_seconds": 3.124494,
+    "rows_per_second": 32005.18
+  },
+  "streaming_processing": {
+    "rows": 100000,
+    "seconds": 0.894513,
+    "rows_per_second": 111792.66,
+    "memory_strategy": "streaming NDJSON; one record in memory plus bounded aggregates"
+  },
+  "http_bulk": {
+    "rows": 100000,
+    "partitions": 2,
+    "seconds_including_server_startup": 4.202186,
+    "rows_per_second_including_server_startup": 23797.14,
+    "chunk_size_bytes": 1048576,
+    "idempotency_replay_verified": true,
+    "transport": "HTTP/1.1 chunked NDJSON over loopback"
+  },
+  "commands": [
+    "python scripts/generate_load.py --rows 100000 --partition-rows 50000 --output artifacts/benchmark-100k",
+    "python scripts/run_scale.py --input artifacts/benchmark-100k --output artifacts/report-100k",
+    "python scripts/benchmark_api.py --rows 100000 --partition-rows 50000 --output artifacts/api-benchmark-100k"
+  ],
+  "limitations": [
+    "Synthetic deterministic data, not a production dataset.",
+    "Single Windows laptop and loopback network; this is not a cloud benchmark.",
+    "Cloud throughput, autoscaling, cost, and SLO remain unverified until deployment."
+  ]
+}
