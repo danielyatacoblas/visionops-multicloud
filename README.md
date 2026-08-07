@@ -36,19 +36,25 @@ python -m pytest -q
 
 ## Arquitectura portable
 
-![Arquitectura portable](diagrams/rendered/portable.svg)
+![Arquitectura portable](diagrams/rendered/portable.png)
+
+Fuente editable: [Mermaid](diagrams/src/portable.mmd) · [SVG vectorial](diagrams/rendered/portable.svg).
 
 El dominio bajo `src/visionops` no importa SDKs cloud. Los futuros adaptadores implementan los mismos puertos y conservan el mismo contrato de entrada/salida.
 
 ## Ejecución local
 
-![Flujo local](diagrams/rendered/local.svg)
+![Flujo local](diagrams/rendered/local.png)
+
+Fuente editable: [Mermaid](diagrams/src/local.mmd) · [SVG vectorial](diagrams/rendered/local.svg).
 
 El dataset incluido es pequeño, sintético y versionado. Los tests cubren el comportamiento decisivo del producto, no solamente que el proceso termine.
 
 ## AWS
 
-![Arquitectura AWS](diagrams/rendered/aws.svg)
+![Arquitectura AWS](diagrams/rendered/aws.png)
+
+Fuente editable: [Mermaid](diagrams/src/aws.mmd) · [SVG vectorial](diagrams/rendered/aws.svg).
 
 ```powershell
 ./scripts/preflight.ps1 -Cloud aws
@@ -61,7 +67,9 @@ Recursos reales permanecen apagados con `enable_cloud_resources = false`. Config
 
 ## GCP
 
-![Arquitectura GCP](diagrams/rendered/gcp.svg)
+![Arquitectura GCP](diagrams/rendered/gcp.png)
+
+Fuente editable: [Mermaid](diagrams/src/gcp.mmd) · [SVG vectorial](diagrams/rendered/gcp.svg).
 
 ```powershell
 ./scripts/preflight.ps1 -Cloud gcp
@@ -74,7 +82,9 @@ Recursos reales permanecen apagados. Configuración pendiente: proyecto, región
 
 ## Azure
 
-![Arquitectura Azure](diagrams/rendered/azure.svg)
+![Arquitectura Azure](diagrams/rendered/azure.png)
+
+Fuente editable: [Mermaid](diagrams/src/azure.mmd) · [SVG vectorial](diagrams/rendered/azure.svg).
 
 ```powershell
 ./scripts/preflight.ps1 -Cloud azure
@@ -119,3 +129,20 @@ No se versionan secretos ni credenciales. Los ejemplos usan nombres no sensibles
 ## Licencia y datos
 
 Código preparado para publicarse bajo MIT cuando el propietario confirme el año/nombre legal. Los datos actuales son fixtures sintéticos; cualquier fuente pública futura debe registrarse con licencia y fecha de descarga.
+
+## Escala y API verificables
+
+Este repositorio incluye una ruta reproducible para generar y procesar datos por particiones, además de `POST /v1/detections/bulk` con NDJSON, idempotencia persistente, límites y métricas. Consulta [Escala y API](docs/SCALE_AND_API.md) y [Ficha de CV](docs/CV_PROJECT.md).
+
+```powershell
+pip install -e ".[dev]"
+python scripts/generate_load.py --profile smoke
+python scripts/run_scale.py
+python scripts/serve_api.py
+```
+
+Los perfiles `medium` y `large` no se ejecutan automáticamente en CI para controlar tiempo y costo; sus artefactos no se versionan. Cada cifra publicada debe proceder de `artifacts/scale-report/scale-run.json`.
+
+## Evidencia local medida
+
+El 6 de agosto de 2026 se verificaron **100 000 registros**: procesamiento streaming a **111,793 registros/s** y ruta HTTP bulk a **23,797 registros/s**, incluyendo arranque del servidor. La repetición idempotente no duplicó registros. Consulta [`docs/evidence/local-100k.json`](docs/evidence/local-100k.json) para hardware, hashes, comandos y limitaciones. Estas cifras son locales y no representan rendimiento cloud.

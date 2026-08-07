@@ -5,3 +5,22 @@ services:
       - ./artifacts:/app/artifacts
     environment:
       APP_ENV: local
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    ports:
+      - "${API_PORT:-8000}:8000"
+    volumes:
+      - ./artifacts:/app/artifacts
+    environment:
+      BULK_DATA_ROOT: /app/artifacts/api
+      BULK_MAX_RECORDS: ${BULK_MAX_RECORDS:-1000000}
+      BULK_MAX_BYTES: ${BULK_MAX_BYTES:-1073741824}
+      BULK_MAX_LINE_BYTES: ${BULK_MAX_LINE_BYTES:-1048576}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/ready')"]
+      interval: 10s
+      timeout: 3s
+      retries: 5

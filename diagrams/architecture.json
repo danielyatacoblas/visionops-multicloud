@@ -1,47 +1,1535 @@
 {
+  "schema_version": "2.0",
   "title": "VisionOps",
-  "flows": {
-    "portable": [
-      "Detecciones anónimas",
-      "Validar privacidad",
-      "Rastrear",
-      "Contar zonas",
-      "Detectar aforo",
-      "Exportar",
-      "Ocupación y alertas"
-    ],
-    "local": [
-      "Synthetic fixtures",
-      "Python · VisionOps",
-      "Contract tests",
-      "Local artifacts"
-    ],
-    "aws": [
-      "Clips",
-      "S3 / Kinesis Video",
-      "ECS o SageMaker",
-      "Tracking anónimo",
-      "Timestream",
-      "CloudWatch",
-      "Alertas"
-    ],
-    "gcp": [
-      "Clips",
-      "Cloud Storage",
-      "Vertex AI / Cloud Run",
-      "Tracking anónimo",
-      "BigQuery",
-      "Cloud Monitoring",
-      "Alertas"
-    ],
-    "azure": [
-      "Clips",
-      "Blob Storage",
-      "Azure ML / Container Apps",
-      "Tracking anónimo",
-      "Data Explorer",
-      "Azure Monitor",
-      "Alertas"
-    ]
+  "project": "visionops-multicloud",
+  "views": {
+    "local": {
+      "subtitle": "Equivalente local ejecutable: API, desacoplamiento, pipeline, datos, serving, error y observabilidad.",
+      "scale": "1k cámaras · frames muestreados · p95 alerta < 10 s · cero identificadores biométricos",
+      "groups": [
+        {
+          "id": "actors",
+          "title": "Actores y fuentes",
+          "x": 25,
+          "y": 105,
+          "width": 235,
+          "height": 835,
+          "color": "#e2e8f0"
+        },
+        {
+          "id": "ingestion",
+          "title": "Ingesta, identidad y secretos",
+          "x": 270,
+          "y": 105,
+          "width": 260,
+          "height": 835,
+          "color": "#dbeafe"
+        },
+        {
+          "id": "pipeline",
+          "title": "Orquestación y procesamiento",
+          "x": 540,
+          "y": 105,
+          "width": 505,
+          "height": 835,
+          "color": "#ede9fe"
+        },
+        {
+          "id": "data",
+          "title": "Datos, modelos y gobierno",
+          "x": 1055,
+          "y": 105,
+          "width": 340,
+          "height": 835,
+          "color": "#fef3c7"
+        },
+        {
+          "id": "serving",
+          "title": "Exposición",
+          "x": 1405,
+          "y": 105,
+          "width": 245,
+          "height": 835,
+          "color": "#dcfce7"
+        },
+        {
+          "id": "operations",
+          "title": "Consumo y operaciones",
+          "x": 1660,
+          "y": 105,
+          "width": 235,
+          "height": 835,
+          "color": "#cffafe"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "source",
+          "label": "Cámaras / clips",
+          "detail": "cliente / fixture / generador",
+          "x": 45,
+          "y": 245,
+          "group": "actors",
+          "kind": "actor",
+          "status": "EXTERNAL"
+        },
+        {
+          "id": "api",
+          "label": [
+            "FastAPI local",
+            "RTSP/objetos · GET /v1/occupancy"
+          ],
+          "detail": "OpenAPI · validation · idempotency",
+          "x": 300,
+          "y": 245,
+          "group": "ingestion",
+          "kind": "api",
+          "status": "LOCAL"
+        },
+        {
+          "id": "secrets",
+          "label": "Config local",
+          "detail": ".env.example · no secrets",
+          "x": 300,
+          "y": 655,
+          "group": "ingestion",
+          "kind": "security",
+          "status": "LOCAL"
+        },
+        {
+          "id": "broker",
+          "label": "Broker / scheduler",
+          "detail": "perfil lite: memoria · full: containers",
+          "x": 575,
+          "y": 245,
+          "group": "pipeline",
+          "kind": "queue",
+          "status": "LOCAL"
+        },
+        {
+          "id": "core1",
+          "label": [
+            "Detección anónima",
+            "personas · confianza · no biometría"
+          ],
+          "detail": "contrato portable",
+          "x": 825,
+          "y": 165,
+          "group": "pipeline",
+          "kind": "service",
+          "status": "LOCAL"
+        },
+        {
+          "id": "core2",
+          "label": [
+            "Tracking y aforo",
+            "zonas · ventanas · deduplicación"
+          ],
+          "detail": "tests + budget/quality gates",
+          "x": 825,
+          "y": 405,
+          "group": "pipeline",
+          "kind": "service",
+          "status": "LOCAL"
+        },
+        {
+          "id": "failure",
+          "label": [
+            "Review / cuarentena",
+            "baja confianza · privacidad"
+          ],
+          "detail": "persistente · re-procesable",
+          "x": 825,
+          "y": 700,
+          "group": "pipeline",
+          "kind": "failure",
+          "status": "LOCAL"
+        },
+        {
+          "id": "data1",
+          "label": [
+            "Clips con retención",
+            "cifrado · lifecycle corto"
+          ],
+          "detail": "filesystem/Parquet/SQLite",
+          "x": 1090,
+          "y": 165,
+          "group": "data",
+          "kind": "object_store",
+          "status": "LOCAL"
+        },
+        {
+          "id": "data2",
+          "label": [
+            "Métricas de ocupación",
+            "zona-minuto · alertas"
+          ],
+          "detail": "manifest + checksum + lineage",
+          "x": 1090,
+          "y": 405,
+          "group": "data",
+          "kind": "database",
+          "status": "LOCAL"
+        },
+        {
+          "id": "data3",
+          "label": "Registry / catálogo",
+          "detail": "versiones + decisiones",
+          "x": 1090,
+          "y": 700,
+          "group": "data",
+          "kind": "database",
+          "status": "LOCAL"
+        },
+        {
+          "id": "serve",
+          "label": [
+            "Occupancy API",
+            "tiempo real + heatmap"
+          ],
+          "detail": "JSON + CSV/HTML + health",
+          "x": 1430,
+          "y": 285,
+          "group": "serving",
+          "kind": "api",
+          "status": "LOCAL"
+        },
+        {
+          "id": "consumer",
+          "label": "Operaciones de tienda",
+          "detail": "dashboard / decisión",
+          "x": 1680,
+          "y": 245,
+          "group": "operations",
+          "kind": "actor",
+          "status": "EXTERNAL"
+        },
+        {
+          "id": "monitor",
+          "label": "Observabilidad local",
+          "detail": "logs JSON · métricas · run manifest",
+          "x": 1680,
+          "y": 655,
+          "group": "operations",
+          "kind": "monitor",
+          "status": "LOCAL"
+        }
+      ],
+      "edges": [
+        {
+          "from": "source",
+          "to": "api",
+          "label": "HTTP / trigger",
+          "style": "solid"
+        },
+        {
+          "from": "api",
+          "to": "broker",
+          "label": "validate / publish",
+          "style": "solid"
+        },
+        {
+          "from": "broker",
+          "to": "core1",
+          "label": "event / batch",
+          "style": "solid"
+        },
+        {
+          "from": "core1",
+          "to": "core2",
+          "label": "transform / infer",
+          "style": "solid"
+        },
+        {
+          "from": "core1",
+          "to": "data1",
+          "label": "raw / artifact",
+          "style": "solid"
+        },
+        {
+          "from": "core2",
+          "to": "data2",
+          "label": "validated",
+          "style": "solid"
+        },
+        {
+          "from": "data2",
+          "to": "data3",
+          "label": "aggregate / register",
+          "style": "solid"
+        },
+        {
+          "from": "data3",
+          "to": "serve",
+          "label": "query / model",
+          "style": "solid"
+        },
+        {
+          "from": "serve",
+          "to": "consumer",
+          "label": "API / dashboard",
+          "style": "solid"
+        },
+        {
+          "from": "core2",
+          "to": "failure",
+          "label": "inválido / incierto",
+          "style": "dashed"
+        },
+        {
+          "from": "secrets",
+          "to": "api",
+          "label": "config",
+          "style": "dashed"
+        },
+        {
+          "from": "core1",
+          "to": "monitor",
+          "label": "logs + metrics",
+          "style": "dashed"
+        },
+        {
+          "from": "serve",
+          "to": "monitor",
+          "label": "latencia + errores",
+          "style": "dashed"
+        }
+      ]
+    },
+    "portable": {
+      "subtitle": "Arquitectura hexagonal: los contratos de dominio permanecen constantes y cada nube aporta adaptadores.",
+      "scale": "1k cámaras · frames muestreados · p95 alerta < 10 s · cero identificadores biométricos",
+      "groups": [
+        {
+          "id": "actors",
+          "title": "Actores y fuentes",
+          "x": 25,
+          "y": 105,
+          "width": 235,
+          "height": 835,
+          "color": "#e2e8f0"
+        },
+        {
+          "id": "ingestion",
+          "title": "Ingesta, identidad y secretos",
+          "x": 270,
+          "y": 105,
+          "width": 260,
+          "height": 835,
+          "color": "#dbeafe"
+        },
+        {
+          "id": "pipeline",
+          "title": "Orquestación y procesamiento",
+          "x": 540,
+          "y": 105,
+          "width": 505,
+          "height": 835,
+          "color": "#ede9fe"
+        },
+        {
+          "id": "data",
+          "title": "Datos, modelos y gobierno",
+          "x": 1055,
+          "y": 105,
+          "width": 340,
+          "height": 835,
+          "color": "#fef3c7"
+        },
+        {
+          "id": "serving",
+          "title": "Exposición",
+          "x": 1405,
+          "y": 105,
+          "width": 245,
+          "height": 835,
+          "color": "#dcfce7"
+        },
+        {
+          "id": "operations",
+          "title": "Consumo y operaciones",
+          "x": 1660,
+          "y": 105,
+          "width": 235,
+          "height": 835,
+          "color": "#cffafe"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "actor",
+          "label": "Cámaras / clips",
+          "detail": "sistema externo",
+          "x": 45,
+          "y": 245,
+          "group": "actors",
+          "kind": "actor",
+          "status": "EXTERNAL"
+        },
+        {
+          "id": "in_port",
+          "label": "Inbound Port",
+          "detail": "HTTP · schedule · stream",
+          "x": 300,
+          "y": 245,
+          "group": "ingestion",
+          "kind": "api",
+          "status": "LOCAL"
+        },
+        {
+          "id": "identity",
+          "label": "Identity / config port",
+          "detail": "OIDC · secrets · tenant",
+          "x": 300,
+          "y": 655,
+          "group": "ingestion",
+          "kind": "security",
+          "status": "LOCAL"
+        },
+        {
+          "id": "queue_port",
+          "label": "Queue / workflow port",
+          "detail": "publish · retry · idempotency",
+          "x": 575,
+          "y": 245,
+          "group": "pipeline",
+          "kind": "queue",
+          "status": "LOCAL"
+        },
+        {
+          "id": "usecase",
+          "label": [
+            "Detección anónima",
+            "personas · confianza · no biometría"
+          ],
+          "detail": "dominio sin SDK cloud",
+          "x": 825,
+          "y": 165,
+          "group": "pipeline",
+          "kind": "service",
+          "status": "LOCAL"
+        },
+        {
+          "id": "policy",
+          "label": [
+            "Tracking y aforo",
+            "zonas · ventanas · deduplicación"
+          ],
+          "detail": "quality · safety · budget",
+          "x": 825,
+          "y": 405,
+          "group": "pipeline",
+          "kind": "service",
+          "status": "LOCAL"
+        },
+        {
+          "id": "failure_port",
+          "label": "Failure / review port",
+          "detail": [
+            "Review / cuarentena",
+            "baja confianza · privacidad"
+          ],
+          "x": 825,
+          "y": 700,
+          "group": "pipeline",
+          "kind": "failure",
+          "status": "LOCAL"
+        },
+        {
+          "id": "object_port",
+          "label": "Object/Data Port",
+          "detail": [
+            "Clips con retención",
+            "cifrado · lifecycle corto"
+          ],
+          "x": 1090,
+          "y": 165,
+          "group": "data",
+          "kind": "object_store",
+          "status": "LOCAL"
+        },
+        {
+          "id": "metadata_port",
+          "label": "Metadata/Registry Port",
+          "detail": [
+            "Métricas de ocupación",
+            "zona-minuto · alertas"
+          ],
+          "x": 1090,
+          "y": 405,
+          "group": "data",
+          "kind": "database",
+          "status": "LOCAL"
+        },
+        {
+          "id": "lineage",
+          "label": "Run manifest",
+          "detail": "hash · version · cost · lineage",
+          "x": 1090,
+          "y": 700,
+          "group": "data",
+          "kind": "database",
+          "status": "LOCAL"
+        },
+        {
+          "id": "serve_port",
+          "label": "Serving Port",
+          "detail": [
+            "Occupancy API",
+            "tiempo real + heatmap"
+          ],
+          "x": 1430,
+          "y": 285,
+          "group": "serving",
+          "kind": "api",
+          "status": "LOCAL"
+        },
+        {
+          "id": "consumer",
+          "label": "Operaciones de tienda",
+          "detail": "adapter web / BI / social",
+          "x": 1680,
+          "y": 245,
+          "group": "operations",
+          "kind": "actor",
+          "status": "EXTERNAL"
+        },
+        {
+          "id": "telemetry",
+          "label": "Telemetry Port",
+          "detail": "traces · metrics · alerts",
+          "x": 1680,
+          "y": 655,
+          "group": "operations",
+          "kind": "monitor",
+          "status": "LOCAL"
+        }
+      ],
+      "edges": [
+        {
+          "from": "actor",
+          "to": "in_port",
+          "label": "HTTP / trigger",
+          "style": "solid"
+        },
+        {
+          "from": "in_port",
+          "to": "queue_port",
+          "label": "Command / Event",
+          "style": "solid"
+        },
+        {
+          "from": "queue_port",
+          "to": "usecase",
+          "label": "consume",
+          "style": "solid"
+        },
+        {
+          "from": "usecase",
+          "to": "policy",
+          "label": "domain result",
+          "style": "solid"
+        },
+        {
+          "from": "usecase",
+          "to": "object_port",
+          "label": "raw / artifact",
+          "style": "solid"
+        },
+        {
+          "from": "policy",
+          "to": "metadata_port",
+          "label": "approved",
+          "style": "solid"
+        },
+        {
+          "from": "metadata_port",
+          "to": "lineage",
+          "label": "register",
+          "style": "solid"
+        },
+        {
+          "from": "lineage",
+          "to": "serve_port",
+          "label": "stable contract",
+          "style": "solid"
+        },
+        {
+          "from": "serve_port",
+          "to": "consumer",
+          "label": "API / asset",
+          "style": "solid"
+        },
+        {
+          "from": "policy",
+          "to": "failure_port",
+          "label": "reject / review",
+          "style": "dashed"
+        },
+        {
+          "from": "identity",
+          "to": "in_port",
+          "label": "identity + config",
+          "style": "dashed"
+        },
+        {
+          "from": "usecase",
+          "to": "telemetry",
+          "label": "OpenTelemetry",
+          "style": "dashed"
+        },
+        {
+          "from": "serve_port",
+          "to": "telemetry",
+          "label": "SLO",
+          "style": "dashed"
+        }
+      ]
+    },
+    "aws": {
+      "subtitle": "AWS: servicios desacoplados, datos gobernados, serving, fallos y observabilidad; el estado Terraform es explícito.",
+      "scale": "1k cámaras · frames muestreados · p95 alerta < 10 s · cero identificadores biométricos",
+      "groups": [
+        {
+          "id": "actors",
+          "title": "Actores y fuentes",
+          "x": 25,
+          "y": 105,
+          "width": 235,
+          "height": 835,
+          "color": "#e2e8f0"
+        },
+        {
+          "id": "ingestion",
+          "title": "Ingesta, identidad y secretos",
+          "x": 270,
+          "y": 105,
+          "width": 260,
+          "height": 835,
+          "color": "#dbeafe"
+        },
+        {
+          "id": "pipeline",
+          "title": "Orquestación y procesamiento",
+          "x": 540,
+          "y": 105,
+          "width": 505,
+          "height": 835,
+          "color": "#ede9fe"
+        },
+        {
+          "id": "data",
+          "title": "Datos, modelos y gobierno",
+          "x": 1055,
+          "y": 105,
+          "width": 340,
+          "height": 835,
+          "color": "#fef3c7"
+        },
+        {
+          "id": "serving",
+          "title": "Exposición",
+          "x": 1405,
+          "y": 105,
+          "width": 245,
+          "height": 835,
+          "color": "#dcfce7"
+        },
+        {
+          "id": "operations",
+          "title": "Consumo y operaciones",
+          "x": 1660,
+          "y": 105,
+          "width": 235,
+          "height": 835,
+          "color": "#cffafe"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "source",
+          "label": "Cámaras / clips",
+          "detail": "external producer",
+          "x": 45,
+          "y": 245,
+          "group": "actors",
+          "kind": "actor",
+          "status": "EXTERNAL"
+        },
+        {
+          "id": "ingest",
+          "label": "Amazon API Gateway",
+          "detail": "HTTP API · throttling",
+          "x": 300,
+          "y": 245,
+          "group": "ingestion",
+          "kind": "api",
+          "status": "PLANNED",
+          "icon": "diagrams/icons/aws/api_gateway.svg",
+          "terraform": "aws_apigatewayv2_api"
+        },
+        {
+          "id": "security",
+          "label": "Secrets Manager",
+          "detail": "secrets · rotation",
+          "x": 300,
+          "y": 655,
+          "group": "ingestion",
+          "kind": "security",
+          "status": "PLANNED",
+          "icon": "diagrams/icons/aws/secrets_manager.svg",
+          "terraform": "aws_secretsmanager_secret"
+        },
+        {
+          "id": "buffer",
+          "label": "AWS Step Functions",
+          "detail": "workflow · idempotency",
+          "x": 575,
+          "y": 245,
+          "group": "pipeline",
+          "kind": "queue",
+          "status": "PLANNED",
+          "icon": "diagrams/icons/aws/step_functions.svg",
+          "terraform": "aws_sfn_state_machine"
+        },
+        {
+          "id": "core1",
+          "label": "Amazon Bedrock",
+          "detail": [
+            "Detección anónima",
+            "personas · confianza · no biometría"
+          ],
+          "x": 825,
+          "y": 165,
+          "group": "pipeline",
+          "kind": "service",
+          "status": "PLANNED",
+          "icon": "diagrams/icons/aws/bedrock.svg",
+          "terraform": "aws_bedrock_guardrail"
+        },
+        {
+          "id": "core2",
+          "label": "AWS Fargate",
+          "detail": [
+            "Tracking y aforo",
+            "zonas · ventanas · deduplicación"
+          ],
+          "x": 825,
+          "y": 405,
+          "group": "pipeline",
+          "kind": "service",
+          "status": "PLANNED",
+          "icon": "diagrams/icons/aws/fargate.svg",
+          "terraform": "aws_ecs_service"
+        },
+        {
+          "id": "failure",
+          "label": "Amazon SNS",
+          "detail": [
+            "Review / cuarentena",
+            "baja confianza · privacidad"
+          ],
+          "x": 825,
+          "y": 700,
+          "group": "pipeline",
+          "kind": "failure",
+          "status": "PLANNED",
+          "icon": "diagrams/icons/aws/sns.svg",
+          "terraform": "aws_sns_topic"
+        },
+        {
+          "id": "data1",
+          "label": "Amazon S3",
+          "detail": [
+            "Clips con retención",
+            "cifrado · lifecycle corto"
+          ],
+          "x": 1090,
+          "y": 165,
+          "group": "data",
+          "kind": "object_store",
+          "status": "IMPLEMENTED",
+          "icon": "diagrams/icons/aws/s3.svg",
+          "terraform": "aws_s3_bucket"
+        },
+        {
+          "id": "data2",
+          "label": "Amazon Timestream",
+          "detail": [
+            "Métricas de ocupación",
+            "zona-minuto · alertas"
+          ],
+          "x": 1090,
+          "y": 405,
+          "group": "data",
+          "kind": "database",
+          "status": "PLANNED",
+          "icon": "diagrams/icons/aws/timestream.svg",
+          "terraform": "aws_timestreamwrite_database"
+        },
+        {
+          "id": "data3",
+          "label": "Amazon DynamoDB",
+          "detail": [
+            "Registry / catálogo",
+            "versiones · lineage"
+          ],
+          "x": 1090,
+          "y": 700,
+          "group": "data",
+          "kind": "database",
+          "status": "PLANNED",
+          "icon": "diagrams/icons/aws/dynamodb.svg",
+          "terraform": "aws_dynamodb_table"
+        },
+        {
+          "id": "serve",
+          "label": "AWS Lambda",
+          "detail": [
+            "Occupancy API",
+            "tiempo real + heatmap"
+          ],
+          "x": 1430,
+          "y": 285,
+          "group": "serving",
+          "kind": "api",
+          "status": "PLANNED",
+          "icon": "diagrams/icons/aws/lambda.svg",
+          "terraform": "aws_lambda_function"
+        },
+        {
+          "id": "consumer",
+          "label": "Operaciones de tienda",
+          "detail": "business consumer",
+          "x": 1680,
+          "y": 245,
+          "group": "operations",
+          "kind": "actor",
+          "status": "EXTERNAL"
+        },
+        {
+          "id": "monitor",
+          "label": "Amazon CloudWatch",
+          "detail": "logs · metrics · alarms",
+          "x": 1680,
+          "y": 655,
+          "group": "operations",
+          "kind": "monitor",
+          "status": "PLANNED",
+          "icon": "diagrams/icons/aws/cloudwatch.svg",
+          "terraform": "aws_cloudwatch_log_group"
+        }
+      ],
+      "edges": [
+        {
+          "from": "source",
+          "to": "ingest",
+          "label": "HTTP / trigger",
+          "style": "solid"
+        },
+        {
+          "from": "ingest",
+          "to": "buffer",
+          "label": "publish / start",
+          "style": "solid"
+        },
+        {
+          "from": "buffer",
+          "to": "core1",
+          "label": "event / batch",
+          "style": "solid"
+        },
+        {
+          "from": "core1",
+          "to": "core2",
+          "label": "transform / infer",
+          "style": "solid"
+        },
+        {
+          "from": "core1",
+          "to": "data1",
+          "label": "raw / artifact",
+          "style": "solid"
+        },
+        {
+          "from": "core2",
+          "to": "data2",
+          "label": "validated",
+          "style": "solid"
+        },
+        {
+          "from": "data2",
+          "to": "data3",
+          "label": "aggregate / register",
+          "style": "solid"
+        },
+        {
+          "from": "data3",
+          "to": "serve",
+          "label": "query / model",
+          "style": "solid"
+        },
+        {
+          "from": "serve",
+          "to": "consumer",
+          "label": "API / dashboard",
+          "style": "solid"
+        },
+        {
+          "from": "core2",
+          "to": "failure",
+          "label": "invalid / uncertain / failed",
+          "style": "dashed"
+        },
+        {
+          "from": "security",
+          "to": "ingest",
+          "label": "identity + secrets",
+          "style": "dashed"
+        },
+        {
+          "from": "core1",
+          "to": "monitor",
+          "label": "logs + metrics + cost",
+          "style": "dashed"
+        },
+        {
+          "from": "serve",
+          "to": "monitor",
+          "label": "SLO + errors",
+          "style": "dashed"
+        }
+      ]
+    },
+    "gcp": {
+      "subtitle": "GOOGLE CLOUD: servicios desacoplados, datos gobernados, serving, fallos y observabilidad; el estado Terraform es explícito.",
+      "scale": "1k cámaras · frames muestreados · p95 alerta < 10 s · cero identificadores biométricos",
+      "groups": [
+        {
+          "id": "actors",
+          "title": "Actores y fuentes",
+          "x": 25,
+          "y": 105,
+          "width": 235,
+          "height": 835,
+          "color": "#e2e8f0"
+        },
+        {
+          "id": "ingestion",
+          "title": "Ingesta, identidad y secretos",
+          "x": 270,
+          "y": 105,
+          "width": 260,
+          "height": 835,
+          "color": "#dbeafe"
+        },
+        {
+          "id": "pipeline",
+          "title": "Orquestación y procesamiento",
+          "x": 540,
+          "y": 105,
+          "width": 505,
+          "height": 835,
+          "color": "#ede9fe"
+        },
+        {
+          "id": "data",
+          "title": "Datos, modelos y gobierno",
+          "x": 1055,
+          "y": 105,
+          "width": 340,
+          "height": 835,
+          "color": "#fef3c7"
+        },
+        {
+          "id": "serving",
+          "title": "Exposición",
+          "x": 1405,
+          "y": 105,
+          "width": 245,
+          "height": 835,
+          "color": "#dcfce7"
+        },
+        {
+          "id": "operations",
+          "title": "Consumo y operaciones",
+          "x": 1660,
+          "y": 105,
+          "width": 235,
+          "height": 835,
+          "color": "#cffafe"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "source",
+          "label": "Cámaras / clips",
+          "detail": "external producer",
+          "x": 45,
+          "y": 245,
+          "group": "actors",
+          "kind": "actor",
+          "status": "EXTERNAL"
+        },
+        {
+          "id": "ingest",
+          "label": "Cloud Run",
+          "detail": "HTTP API · autoscaling",
+          "x": 300,
+          "y": 245,
+          "group": "ingestion",
+          "kind": "api",
+          "status": "PLANNED",
+          "icon": "diagrams/icons/gcp/cloud_run.svg",
+          "terraform": "google_cloud_run_v2_service"
+        },
+        {
+          "id": "security",
+          "label": "Secret Manager",
+          "detail": "secrets · rotation",
+          "x": 300,
+          "y": 655,
+          "group": "ingestion",
+          "kind": "security",
+          "status": "PLANNED",
+          "icon": "diagrams/icons/gcp/secret_manager.svg",
+          "terraform": "google_secret_manager_secret"
+        },
+        {
+          "id": "buffer",
+          "label": "Workflows",
+          "detail": "workflow · retries · fan-out",
+          "x": 575,
+          "y": 245,
+          "group": "pipeline",
+          "kind": "queue",
+          "status": "PLANNED",
+          "icon": "diagrams/icons/gcp/workflows.svg",
+          "terraform": "google_workflows_workflow"
+        },
+        {
+          "id": "core1",
+          "label": "Vertex AI",
+          "detail": [
+            "Detección anónima",
+            "personas · confianza · no biometría"
+          ],
+          "x": 825,
+          "y": 165,
+          "group": "pipeline",
+          "kind": "service",
+          "status": "PLANNED",
+          "icon": "diagrams/icons/gcp/vertex_ai.svg",
+          "terraform": "google_vertex_ai_endpoint"
+        },
+        {
+          "id": "core2",
+          "label": "Cloud Run Jobs",
+          "detail": [
+            "Tracking y aforo",
+            "zonas · ventanas · deduplicación"
+          ],
+          "x": 825,
+          "y": 405,
+          "group": "pipeline",
+          "kind": "service",
+          "status": "PLANNED",
+          "icon": "diagrams/icons/gcp/cloud_run.svg",
+          "terraform": "google_cloud_run_v2_job"
+        },
+        {
+          "id": "failure",
+          "label": "Pub/Sub DLQ",
+          "detail": [
+            "Review / cuarentena",
+            "baja confianza · privacidad"
+          ],
+          "x": 825,
+          "y": 700,
+          "group": "pipeline",
+          "kind": "failure",
+          "status": "PLANNED",
+          "icon": "diagrams/icons/gcp/pubsub.svg",
+          "terraform": "google_pubsub_topic"
+        },
+        {
+          "id": "data1",
+          "label": "Cloud Storage",
+          "detail": [
+            "Clips con retención",
+            "cifrado · lifecycle corto"
+          ],
+          "x": 1090,
+          "y": 165,
+          "group": "data",
+          "kind": "object_store",
+          "status": "IMPLEMENTED",
+          "icon": "diagrams/icons/gcp/storage.svg",
+          "terraform": "google_storage_bucket"
+        },
+        {
+          "id": "data2",
+          "label": "BigQuery",
+          "detail": [
+            "Métricas de ocupación",
+            "zona-minuto · alertas"
+          ],
+          "x": 1090,
+          "y": 405,
+          "group": "data",
+          "kind": "database",
+          "status": "PLANNED",
+          "icon": "diagrams/icons/gcp/bigquery.svg",
+          "terraform": "google_bigquery_table"
+        },
+        {
+          "id": "data3",
+          "label": "Firestore",
+          "detail": [
+            "Registry / catálogo",
+            "versiones · lineage"
+          ],
+          "x": 1090,
+          "y": 700,
+          "group": "data",
+          "kind": "database",
+          "status": "PLANNED",
+          "icon": "diagrams/icons/gcp/firestore.svg",
+          "terraform": "google_firestore_database"
+        },
+        {
+          "id": "serve",
+          "label": "API Gateway + Cloud Run",
+          "detail": [
+            "Occupancy API",
+            "tiempo real + heatmap"
+          ],
+          "x": 1430,
+          "y": 285,
+          "group": "serving",
+          "kind": "api",
+          "status": "PLANNED",
+          "icon": "diagrams/icons/gcp/api_gateway.svg",
+          "terraform": "google_api_gateway_api"
+        },
+        {
+          "id": "consumer",
+          "label": "Operaciones de tienda",
+          "detail": "business consumer",
+          "x": 1680,
+          "y": 245,
+          "group": "operations",
+          "kind": "actor",
+          "status": "EXTERNAL"
+        },
+        {
+          "id": "monitor",
+          "label": "Cloud Monitoring",
+          "detail": "logs · metrics · alerts",
+          "x": 1680,
+          "y": 655,
+          "group": "operations",
+          "kind": "monitor",
+          "status": "PLANNED",
+          "icon": "diagrams/icons/gcp/monitoring.svg",
+          "terraform": "google_monitoring_alert_policy"
+        }
+      ],
+      "edges": [
+        {
+          "from": "source",
+          "to": "ingest",
+          "label": "HTTP / trigger",
+          "style": "solid"
+        },
+        {
+          "from": "ingest",
+          "to": "buffer",
+          "label": "publish / start",
+          "style": "solid"
+        },
+        {
+          "from": "buffer",
+          "to": "core1",
+          "label": "event / batch",
+          "style": "solid"
+        },
+        {
+          "from": "core1",
+          "to": "core2",
+          "label": "transform / infer",
+          "style": "solid"
+        },
+        {
+          "from": "core1",
+          "to": "data1",
+          "label": "raw / artifact",
+          "style": "solid"
+        },
+        {
+          "from": "core2",
+          "to": "data2",
+          "label": "validated",
+          "style": "solid"
+        },
+        {
+          "from": "data2",
+          "to": "data3",
+          "label": "aggregate / register",
+          "style": "solid"
+        },
+        {
+          "from": "data3",
+          "to": "serve",
+          "label": "query / model",
+          "style": "solid"
+        },
+        {
+          "from": "serve",
+          "to": "consumer",
+          "label": "API / dashboard",
+          "style": "solid"
+        },
+        {
+          "from": "core2",
+          "to": "failure",
+          "label": "invalid / uncertain / failed",
+          "style": "dashed"
+        },
+        {
+          "from": "security",
+          "to": "ingest",
+          "label": "identity + secrets",
+          "style": "dashed"
+        },
+        {
+          "from": "core1",
+          "to": "monitor",
+          "label": "logs + metrics + cost",
+          "style": "dashed"
+        },
+        {
+          "from": "serve",
+          "to": "monitor",
+          "label": "SLO + errors",
+          "style": "dashed"
+        }
+      ]
+    },
+    "azure": {
+      "subtitle": "AZURE: servicios desacoplados, datos gobernados, serving, fallos y observabilidad; el estado Terraform es explícito.",
+      "scale": "1k cámaras · frames muestreados · p95 alerta < 10 s · cero identificadores biométricos",
+      "groups": [
+        {
+          "id": "actors",
+          "title": "Actores y fuentes",
+          "x": 25,
+          "y": 105,
+          "width": 235,
+          "height": 835,
+          "color": "#e2e8f0"
+        },
+        {
+          "id": "ingestion",
+          "title": "Ingesta, identidad y secretos",
+          "x": 270,
+          "y": 105,
+          "width": 260,
+          "height": 835,
+          "color": "#dbeafe"
+        },
+        {
+          "id": "pipeline",
+          "title": "Orquestación y procesamiento",
+          "x": 540,
+          "y": 105,
+          "width": 505,
+          "height": 835,
+          "color": "#ede9fe"
+        },
+        {
+          "id": "data",
+          "title": "Datos, modelos y gobierno",
+          "x": 1055,
+          "y": 105,
+          "width": 340,
+          "height": 835,
+          "color": "#fef3c7"
+        },
+        {
+          "id": "serving",
+          "title": "Exposición",
+          "x": 1405,
+          "y": 105,
+          "width": 245,
+          "height": 835,
+          "color": "#dcfce7"
+        },
+        {
+          "id": "operations",
+          "title": "Consumo y operaciones",
+          "x": 1660,
+          "y": 105,
+          "width": 235,
+          "height": 835,
+          "color": "#cffafe"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "source",
+          "label": "Cámaras / clips",
+          "detail": "external producer",
+          "x": 45,
+          "y": 245,
+          "group": "actors",
+          "kind": "actor",
+          "status": "EXTERNAL"
+        },
+        {
+          "id": "ingest",
+          "label": "Azure Functions",
+          "detail": "HTTP API · autoscaling",
+          "x": 300,
+          "y": 245,
+          "group": "ingestion",
+          "kind": "api",
+          "status": "PLANNED",
+          "icon": "diagrams/icons/azure/functions.svg",
+          "terraform": "azurerm_linux_function_app"
+        },
+        {
+          "id": "security",
+          "label": "Azure Key Vault",
+          "detail": "secrets · rotation · CMK",
+          "x": 300,
+          "y": 655,
+          "group": "ingestion",
+          "kind": "security",
+          "status": "PLANNED",
+          "icon": "diagrams/icons/azure/key_vault.svg",
+          "terraform": "azurerm_key_vault"
+        },
+        {
+          "id": "buffer",
+          "label": "Durable Functions",
+          "detail": "workflow · retries · fan-out",
+          "x": 575,
+          "y": 245,
+          "group": "pipeline",
+          "kind": "queue",
+          "status": "PLANNED",
+          "icon": "diagrams/icons/azure/functions.svg",
+          "terraform": "azurerm_linux_function_app"
+        },
+        {
+          "id": "core1",
+          "label": "Microsoft Foundry",
+          "detail": [
+            "Detección anónima",
+            "personas · confianza · no biometría"
+          ],
+          "x": 825,
+          "y": 165,
+          "group": "pipeline",
+          "kind": "service",
+          "status": "PLANNED",
+          "icon": "diagrams/icons/azure/ai_foundry.svg",
+          "terraform": "azurerm_ai_services"
+        },
+        {
+          "id": "core2",
+          "label": "Azure Container Apps",
+          "detail": [
+            "Tracking y aforo",
+            "zonas · ventanas · deduplicación"
+          ],
+          "x": 825,
+          "y": 405,
+          "group": "pipeline",
+          "kind": "service",
+          "status": "PLANNED",
+          "icon": "diagrams/icons/azure/container_apps.svg",
+          "terraform": "azurerm_container_app_job"
+        },
+        {
+          "id": "failure",
+          "label": "Service Bus DLQ",
+          "detail": [
+            "Review / cuarentena",
+            "baja confianza · privacidad"
+          ],
+          "x": 825,
+          "y": 700,
+          "group": "pipeline",
+          "kind": "failure",
+          "status": "PLANNED",
+          "icon": "diagrams/icons/azure/service_bus.svg",
+          "terraform": "azurerm_servicebus_queue"
+        },
+        {
+          "id": "data1",
+          "label": "ADLS Gen2 / Blob",
+          "detail": [
+            "Clips con retención",
+            "cifrado · lifecycle corto"
+          ],
+          "x": 1090,
+          "y": 165,
+          "group": "data",
+          "kind": "object_store",
+          "status": "IMPLEMENTED",
+          "icon": "diagrams/icons/azure/storage.svg",
+          "terraform": "azurerm_storage_account"
+        },
+        {
+          "id": "data2",
+          "label": "Azure Data Explorer",
+          "detail": [
+            "Métricas de ocupación",
+            "zona-minuto · alertas"
+          ],
+          "x": 1090,
+          "y": 405,
+          "group": "data",
+          "kind": "database",
+          "status": "PLANNED",
+          "icon": "diagrams/icons/azure/data_explorer.svg",
+          "terraform": "azurerm_kusto_cluster"
+        },
+        {
+          "id": "data3",
+          "label": "Azure Cosmos DB",
+          "detail": [
+            "Registry / catálogo",
+            "versiones · lineage"
+          ],
+          "x": 1090,
+          "y": 700,
+          "group": "data",
+          "kind": "database",
+          "status": "PLANNED",
+          "icon": "diagrams/icons/azure/cosmos_db.svg",
+          "terraform": "azurerm_cosmosdb_account"
+        },
+        {
+          "id": "serve",
+          "label": "API Management",
+          "detail": [
+            "Occupancy API",
+            "tiempo real + heatmap"
+          ],
+          "x": 1430,
+          "y": 285,
+          "group": "serving",
+          "kind": "api",
+          "status": "PLANNED",
+          "icon": "diagrams/icons/azure/api_management.svg",
+          "terraform": "azurerm_api_management"
+        },
+        {
+          "id": "consumer",
+          "label": "Operaciones de tienda",
+          "detail": "business consumer",
+          "x": 1680,
+          "y": 245,
+          "group": "operations",
+          "kind": "actor",
+          "status": "EXTERNAL"
+        },
+        {
+          "id": "monitor",
+          "label": "Azure Monitor",
+          "detail": "logs · metrics · alerts",
+          "x": 1680,
+          "y": 655,
+          "group": "operations",
+          "kind": "monitor",
+          "status": "PLANNED",
+          "icon": "diagrams/icons/azure/monitor.svg",
+          "terraform": "azurerm_monitor_metric_alert"
+        }
+      ],
+      "edges": [
+        {
+          "from": "source",
+          "to": "ingest",
+          "label": "HTTP / trigger",
+          "style": "solid"
+        },
+        {
+          "from": "ingest",
+          "to": "buffer",
+          "label": "publish / start",
+          "style": "solid"
+        },
+        {
+          "from": "buffer",
+          "to": "core1",
+          "label": "event / batch",
+          "style": "solid"
+        },
+        {
+          "from": "core1",
+          "to": "core2",
+          "label": "transform / infer",
+          "style": "solid"
+        },
+        {
+          "from": "core1",
+          "to": "data1",
+          "label": "raw / artifact",
+          "style": "solid"
+        },
+        {
+          "from": "core2",
+          "to": "data2",
+          "label": "validated",
+          "style": "solid"
+        },
+        {
+          "from": "data2",
+          "to": "data3",
+          "label": "aggregate / register",
+          "style": "solid"
+        },
+        {
+          "from": "data3",
+          "to": "serve",
+          "label": "query / model",
+          "style": "solid"
+        },
+        {
+          "from": "serve",
+          "to": "consumer",
+          "label": "API / dashboard",
+          "style": "solid"
+        },
+        {
+          "from": "core2",
+          "to": "failure",
+          "label": "invalid / uncertain / failed",
+          "style": "dashed"
+        },
+        {
+          "from": "security",
+          "to": "ingest",
+          "label": "identity + secrets",
+          "style": "dashed"
+        },
+        {
+          "from": "core1",
+          "to": "monitor",
+          "label": "logs + metrics + cost",
+          "style": "dashed"
+        },
+        {
+          "from": "serve",
+          "to": "monitor",
+          "label": "SLO + errors",
+          "style": "dashed"
+        }
+      ]
+    }
   }
 }

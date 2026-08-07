@@ -7,10 +7,10 @@ name = "visionops-multicloud"
 version = "0.1.0"
 description = "Analítica de ocupación por video con privacidad"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = ["fastapi>=0.116,<1", "uvicorn[standard]>=0.35,<1"]
 
 [project.optional-dependencies]
-dev = ["pytest>=8.4,<9", "ruff>=0.12,<1"]
+dev = ["pytest>=8.4,<9", "ruff>=0.12,<1", "httpx>=0.28,<1"]
 
 [project.scripts]
 visionops = "visionops.__main__:main"
