@@ -1,16 +1,54 @@
 flowchart LR
-    N0["Clips"]
-    N1["Cloud Storage"]
-    N2["Vertex AI / Cloud Run"]
-    N3["Tracking anónimo"]
-    N4["BigQuery"]
-    N5["Cloud Monitoring"]
-    N6["Alertas"]
-    N0 --> N1
-    N1 --> N2
-    N2 --> N3
-    N3 --> N4
-    N4 --> N5
-    N5 --> N6
-    classDef title fill:#0f172a,color:#f8fafc,stroke:#38bdf8
-    class N0 title
+  subgraph actors["Actores y fuentes"]
+    direction TB
+    source(["Cámaras / clips<br/>external producer"])
+  end
+  subgraph ingestion["Ingesta, identidad y secretos"]
+    direction TB
+    ingest["Cloud Run<br/>HTTP API · autoscaling"]
+    security["Secret Manager<br/>secrets · rotation"]
+  end
+  subgraph pipeline["Orquestación y procesamiento"]
+    direction TB
+    buffer{{"Workflows<br/>workflow · retries · fan-out"}}
+    core1["Vertex AI<br/>Detección anónima<br/>personas · confianza · no biometría"]
+    core2["Cloud Run Jobs<br/>Tracking y aforo<br/>zonas · ventanas · deduplicación"]
+    failure>"Pub/Sub DLQ<br/>Review / cuarentena<br/>baja confianza · privacidad"]
+  end
+  subgraph data["Datos, modelos y gobierno"]
+    direction TB
+    data1[("Cloud Storage<br/>Clips con retención<br/>cifrado · lifecycle corto")]
+    data2[("BigQuery<br/>Métricas de ocupación<br/>zona-minuto · alertas")]
+    data3[("Firestore<br/>Registry / catálogo<br/>versiones · lineage")]
+  end
+  subgraph serving["Exposición"]
+    direction TB
+    serve["API Gateway + Cloud Run<br/>Occupancy API<br/>tiempo real + heatmap"]
+  end
+  subgraph operations["Consumo y operaciones"]
+    direction TB
+    consumer(["Operaciones de tienda<br/>business consumer"])
+    monitor["Cloud Monitoring<br/>logs · metrics · alerts"]
+  end
+  source -->|"HTTP / trigger"| ingest
+  ingest -->|"publish / start"| buffer
+  buffer -->|"event / batch"| core1
+  core1 -->|"transform / infer"| core2
+  core1 -->|"raw / artifact"| data1
+  core2 -->|"validated"| data2
+  data2 -->|"aggregate / register"| data3
+  data3 -->|"query / model"| serve
+  serve -->|"API / dashboard"| consumer
+  core2 -.->|"invalid / uncertain / failed"| failure
+  security -.->|"identity + secrets"| ingest
+  core1 -.->|"logs + metrics + cost"| monitor
+  serve -.->|"SLO + errors"| monitor
+  classDef implemented fill:#dcfce7,stroke:#15803d,color:#052e16,stroke-width:2px
+  classDef planned fill:#fef3c7,stroke:#b45309,color:#451a03,stroke-width:2px
+  classDef external fill:#f1f5f9,stroke:#475569,color:#0f172a,stroke-width:2px
+  classDef local fill:#dbeafe,stroke:#1d4ed8,color:#172554,stroke-width:2px
+  classDef failure fill:#fee2e2,stroke:#b91c1c,color:#450a0a,stroke-width:2px
+  class data1 implemented
+  class ingest,security,buffer,core1,core2,failure,data2,data3,serve,monitor planned
+  class source,consumer external
+  class failure failure
