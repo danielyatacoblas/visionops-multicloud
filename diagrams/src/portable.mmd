@@ -1,16 +1,53 @@
 flowchart LR
-    N0["Detecciones anónimas"]
-    N1["Validar privacidad"]
-    N2["Rastrear"]
-    N3["Contar zonas"]
-    N4["Detectar aforo"]
-    N5["Exportar"]
-    N6["Ocupación y alertas"]
-    N0 --> N1
-    N1 --> N2
-    N2 --> N3
-    N3 --> N4
-    N4 --> N5
-    N5 --> N6
-    classDef title fill:#0f172a,color:#f8fafc,stroke:#38bdf8
-    class N0 title
+  subgraph actors["Actores y fuentes"]
+    direction TB
+    actor(["Cámaras / clips<br/>sistema externo"])
+  end
+  subgraph ingestion["Ingesta, identidad y secretos"]
+    direction TB
+    in_port["Inbound Port<br/>HTTP · schedule · stream"]
+    identity["Identity / config port<br/>OIDC · secrets · tenant"]
+  end
+  subgraph pipeline["Orquestación y procesamiento"]
+    direction TB
+    queue_port{{"Queue / workflow port<br/>publish · retry · idempotency"}}
+    usecase["Detección anónima<br/>personas · confianza · no biometría<br/>dominio sin SDK cloud"]
+    policy["Tracking y aforo<br/>zonas · ventanas · deduplicación<br/>quality · safety · budget"]
+    failure_port>"Failure / review port<br/>Review / cuarentena<br/>baja confianza · privacidad"]
+  end
+  subgraph data["Datos, modelos y gobierno"]
+    direction TB
+    object_port[("Object/Data Port<br/>Clips con retención<br/>cifrado · lifecycle corto")]
+    metadata_port[("Metadata/Registry Port<br/>Métricas de ocupación<br/>zona-minuto · alertas")]
+    lineage[("Run manifest<br/>hash · version · cost · lineage")]
+  end
+  subgraph serving["Exposición"]
+    direction TB
+    serve_port["Serving Port<br/>Occupancy API<br/>tiempo real + heatmap"]
+  end
+  subgraph operations["Consumo y operaciones"]
+    direction TB
+    consumer(["Operaciones de tienda<br/>adapter web / BI / social"])
+    telemetry["Telemetry Port<br/>traces · metrics · alerts"]
+  end
+  actor -->|"HTTP / trigger"| in_port
+  in_port -->|"Command / Event"| queue_port
+  queue_port -->|"consume"| usecase
+  usecase -->|"domain result"| policy
+  usecase -->|"raw / artifact"| object_port
+  policy -->|"approved"| metadata_port
+  metadata_port -->|"register"| lineage
+  lineage -->|"stable contract"| serve_port
+  serve_port -->|"API / asset"| consumer
+  policy -.->|"reject / review"| failure_port
+  identity -.->|"identity + config"| in_port
+  usecase -.->|"OpenTelemetry"| telemetry
+  serve_port -.->|"SLO"| telemetry
+  classDef implemented fill:#dcfce7,stroke:#15803d,color:#052e16,stroke-width:2px
+  classDef planned fill:#fef3c7,stroke:#b45309,color:#451a03,stroke-width:2px
+  classDef external fill:#f1f5f9,stroke:#475569,color:#0f172a,stroke-width:2px
+  classDef local fill:#dbeafe,stroke:#1d4ed8,color:#172554,stroke-width:2px
+  classDef failure fill:#fee2e2,stroke:#b91c1c,color:#450a0a,stroke-width:2px
+  class actor,consumer external
+  class in_port,identity,queue_port,usecase,policy,failure_port,object_port,metadata_port,lineage,serve_port,telemetry local
+  class failure_port failure

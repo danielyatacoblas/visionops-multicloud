@@ -1,10 +1,53 @@
 flowchart LR
-    N0["Synthetic fixtures"]
-    N1["Python · VisionOps"]
-    N2["Contract tests"]
-    N3["Local artifacts"]
-    N0 --> N1
-    N1 --> N2
-    N2 --> N3
-    classDef title fill:#0f172a,color:#f8fafc,stroke:#38bdf8
-    class N0 title
+  subgraph actors["Actores y fuentes"]
+    direction TB
+    source(["Cámaras / clips<br/>cliente / fixture / generador"])
+  end
+  subgraph ingestion["Ingesta, identidad y secretos"]
+    direction TB
+    api["FastAPI local<br/>RTSP/objetos · GET /v1/occupancy<br/>OpenAPI · validation · idempotency"]
+    secrets["Config local<br/>.env.example · no secrets"]
+  end
+  subgraph pipeline["Orquestación y procesamiento"]
+    direction TB
+    broker{{"Broker / scheduler<br/>perfil lite: memoria · full: containers"}}
+    core1["Detección anónima<br/>personas · confianza · no biometría<br/>contrato portable"]
+    core2["Tracking y aforo<br/>zonas · ventanas · deduplicación<br/>tests + budget/quality gates"]
+    failure>"Review / cuarentena<br/>baja confianza · privacidad<br/>persistente · re-procesable"]
+  end
+  subgraph data["Datos, modelos y gobierno"]
+    direction TB
+    data1[("Clips con retención<br/>cifrado · lifecycle corto<br/>filesystem/Parquet/SQLite")]
+    data2[("Métricas de ocupación<br/>zona-minuto · alertas<br/>manifest + checksum + lineage")]
+    data3[("Registry / catálogo<br/>versiones + decisiones")]
+  end
+  subgraph serving["Exposición"]
+    direction TB
+    serve["Occupancy API<br/>tiempo real + heatmap<br/>JSON + CSV/HTML + health"]
+  end
+  subgraph operations["Consumo y operaciones"]
+    direction TB
+    consumer(["Operaciones de tienda<br/>dashboard / decisión"])
+    monitor["Observabilidad local<br/>logs JSON · métricas · run manifest"]
+  end
+  source -->|"HTTP / trigger"| api
+  api -->|"validate / publish"| broker
+  broker -->|"event / batch"| core1
+  core1 -->|"transform / infer"| core2
+  core1 -->|"raw / artifact"| data1
+  core2 -->|"validated"| data2
+  data2 -->|"aggregate / register"| data3
+  data3 -->|"query / model"| serve
+  serve -->|"API / dashboard"| consumer
+  core2 -.->|"inválido / incierto"| failure
+  secrets -.->|"config"| api
+  core1 -.->|"logs + metrics"| monitor
+  serve -.->|"latencia + errores"| monitor
+  classDef implemented fill:#dcfce7,stroke:#15803d,color:#052e16,stroke-width:2px
+  classDef planned fill:#fef3c7,stroke:#b45309,color:#451a03,stroke-width:2px
+  classDef external fill:#f1f5f9,stroke:#475569,color:#0f172a,stroke-width:2px
+  classDef local fill:#dbeafe,stroke:#1d4ed8,color:#172554,stroke-width:2px
+  classDef failure fill:#fee2e2,stroke:#b91c1c,color:#450a0a,stroke-width:2px
+  class source,consumer external
+  class api,secrets,broker,core1,core2,failure,data1,data2,data3,serve,monitor local
+  class failure failure

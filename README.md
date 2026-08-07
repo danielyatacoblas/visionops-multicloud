@@ -36,19 +36,25 @@ python -m pytest -q
 
 ## Arquitectura portable
 
-![Arquitectura portable](diagrams/rendered/portable.svg)
+![Arquitectura portable](diagrams/rendered/portable.png)
+
+Fuente editable: [Mermaid](diagrams/src/portable.mmd) · [SVG vectorial](diagrams/rendered/portable.svg).
 
 El dominio bajo `src/visionops` no importa SDKs cloud. Los futuros adaptadores implementan los mismos puertos y conservan el mismo contrato de entrada/salida.
 
 ## Ejecución local
 
-![Flujo local](diagrams/rendered/local.svg)
+![Flujo local](diagrams/rendered/local.png)
+
+Fuente editable: [Mermaid](diagrams/src/local.mmd) · [SVG vectorial](diagrams/rendered/local.svg).
 
 El dataset incluido es pequeño, sintético y versionado. Los tests cubren el comportamiento decisivo del producto, no solamente que el proceso termine.
 
 ## AWS
 
-![Arquitectura AWS](diagrams/rendered/aws.svg)
+![Arquitectura AWS](diagrams/rendered/aws.png)
+
+Fuente editable: [Mermaid](diagrams/src/aws.mmd) · [SVG vectorial](diagrams/rendered/aws.svg).
 
 ```powershell
 ./scripts/preflight.ps1 -Cloud aws
@@ -61,7 +67,9 @@ Recursos reales permanecen apagados con `enable_cloud_resources = false`. Config
 
 ## GCP
 
-![Arquitectura GCP](diagrams/rendered/gcp.svg)
+![Arquitectura GCP](diagrams/rendered/gcp.png)
+
+Fuente editable: [Mermaid](diagrams/src/gcp.mmd) · [SVG vectorial](diagrams/rendered/gcp.svg).
 
 ```powershell
 ./scripts/preflight.ps1 -Cloud gcp
@@ -74,7 +82,9 @@ Recursos reales permanecen apagados. Configuración pendiente: proyecto, región
 
 ## Azure
 
-![Arquitectura Azure](diagrams/rendered/azure.svg)
+![Arquitectura Azure](diagrams/rendered/azure.png)
+
+Fuente editable: [Mermaid](diagrams/src/azure.mmd) · [SVG vectorial](diagrams/rendered/azure.svg).
 
 ```powershell
 ./scripts/preflight.ps1 -Cloud azure
