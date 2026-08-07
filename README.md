@@ -24,7 +24,7 @@ cd visionops-multicloud
 ./scripts/demo.ps1
 ```
 
-La demo escribe resultados reproducibles en `artifacts/`. No usa credenciales, APIs de pago ni servicios cloud.
+La demo escribe resultados reproducibles en `artifacts/`. No usa credenciales, APIs de pago ni servicios cloud. Una ejecución de referencia ya versionada está en [`docs/demo/sample-output`](docs/demo/sample-output).
 
 También funciona de forma directa:
 

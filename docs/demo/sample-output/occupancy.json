@@ -1,0 +1,38 @@
+{
+  "privacy": {
+    "biometrics_stored": false,
+    "raw_video_retention": "disabled-in-local-demo"
+  },
+  "max_occupancy": {
+    "entry": 2,
+    "checkout": 3
+  },
+  "timeline": [
+    {
+      "timestamp": "2026-08-06T14:00:00Z",
+      "counts": {
+        "entry": 2
+      }
+    },
+    {
+      "timestamp": "2026-08-06T14:00:10Z",
+      "counts": {
+        "checkout": 3
+      }
+    },
+    {
+      "timestamp": "2026-08-06T14:00:20Z",
+      "counts": {
+        "checkout": 1
+      }
+    }
+  ],
+  "alerts": [
+    {
+      "timestamp": "2026-08-06T14:00:10Z",
+      "zone": "checkout",
+      "count": 3,
+      "capacity": 2
+    }
+  ]
+}
