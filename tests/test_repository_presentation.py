@@ -17,6 +17,9 @@ def test_readme_explains_real_structure_and_gitflow() -> None:
     assert "release/*" in readme
     assert "hotfix/*" in readme
     assert "El repositorio local se inicializa" not in readme
+    assert "URL-PENDIENTE" not in readme
+    assert "PENDING_REMOTE" not in readme
+    assert f"https://github.com/danielyatacoblas/{PROJECT}" in readme
     assert readme.count("```") % 2 == 0
     for relative in (
         ".github/workflows/ci.yml",
