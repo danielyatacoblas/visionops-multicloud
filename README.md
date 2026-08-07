@@ -17,7 +17,7 @@ Flujo funcional: `Detecciones anónimas → Validar privacidad → Rastrear → 
 Requisitos: Python 3.12+ y PowerShell 7 o Windows PowerShell. Docker es opcional.
 
 ```powershell
-git clone <URL-PENDIENTE>
+git clone https://github.com/danielyatacoblas/visionops-multicloud.git
 cd visionops-multicloud
 ./scripts/bootstrap.ps1
 ./scripts/test.ps1
@@ -221,7 +221,7 @@ No se versionan secretos ni credenciales. Los ejemplos usan nombres no sensibles
 | Diagramas Mermaid + SVG | Incluidos |
 | Terraform estático | Incluido; se valida sin `apply` |
 | Despliegue AWS/GCP/Azure | `PENDING_CLOUD_VALIDATION` |
-| URL del repositorio | `PENDING_REMOTE` |
+| URL del repositorio | [GitHub](https://github.com/danielyatacoblas/visionops-multicloud) |
 
 ## Licencia y datos
 
